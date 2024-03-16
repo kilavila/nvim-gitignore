@@ -91,7 +91,12 @@ local function update_window()
     return
   end
 
-  api.nvim_buf_set_lines(buf, 0, -1, false, list)
+  local templates = {}
+  for template in string.gmatch(list, '[^\r\n]+') do
+    table.insert(templates, template)
+  end
+
+  api.nvim_buf_set_lines(buf, 0, -1, false, templates)
   api.nvim_buf_set_option(buf, 'modifiable', false)
 end
 
