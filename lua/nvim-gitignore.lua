@@ -58,29 +58,6 @@ local function open_window()
   api.nvim_win_set_option(win, 'cursorline', true)
 end
 
-local function get_gitignore_templates()
-  local handle = io.popen('curl -s ' .. url)
-
-  if handle == nil then
-    return {'Could not fetch gitignore templates'}
-  end
-
-  local output = handle:read('*a')
-  handle:close()
-
-  print(output)
-  return vim.split(output, '\n')
-end
-
-local function update_window()
-  api.nvim_buf_set_option(buf, 'modifiable', true)
-
-  local templates_list = get_gitignore_templates()
-
-  api.nvim_buf_set_lines(buf, 0, -1, false, templates_list)
-  api.nvim_buf_set_option(buf, 'modifiable', false)
-end
-
 local function close_window()
   if not window_open then
     return
@@ -88,6 +65,34 @@ local function close_window()
   window_open = false
 
   api.nvim_win_close(win, true)
+end
+
+local function get_gitignore_templates()
+  local result = io.popen('curl -s ' .. url)
+
+  if result == nil then
+    return
+  end
+
+  local data = result:read('*a')
+  result:close()
+
+  return data
+end
+
+local function update_window()
+  api.nvim_buf_set_option(buf, 'modifiable', true)
+
+  local list = get_gitignore_templates()
+
+  if list == nil then
+    print('Failed to fetch gitignore templates')
+    close_window()
+    return
+  end
+
+  api.nvim_buf_set_lines(buf, 0, -1, false, list)
+  api.nvim_buf_set_option(buf, 'modifiable', false)
 end
 
 local function move_cursor()
