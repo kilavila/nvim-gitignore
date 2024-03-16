@@ -127,8 +127,11 @@ local function select_template()
     return
   end
 
-  local template_raw = string.match(template_json.tostring(), '"source": "(.*)"')
-  local template = string.gsub(template_raw, '\\n', '\n')
+  -- get "source" property
+  -- replace "\n" with line break
+  -- turn to string and print
+  local source = template_json:match('"source": "(.-)"')
+  local template = string.gsub(source, '\\n', '\n')
 
   print(template)
 end
