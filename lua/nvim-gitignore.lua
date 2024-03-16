@@ -133,7 +133,19 @@ local function select_template()
   local source = template_json:match('"source": "(.-)"')
   local template = string.gsub(source, '\\n', '\n')
 
-  print(template)
+  -- write template to new file ".gitignore"
+  local file = io.open('.gitignore', 'w')
+
+  if file == nil then
+    print('Failed to write .gitignore')
+    close_window()
+    return
+  end
+
+  close_window()
+  file:write(template)
+  file:close()
+  print('Template written to .gitignore')
 end
 
 local function move_cursor()
