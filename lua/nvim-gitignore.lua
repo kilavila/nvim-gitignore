@@ -1,5 +1,3 @@
-local http = require "http.request"
-
 local api = vim.api
 local buf, win
 
@@ -61,15 +59,17 @@ local function open_window()
 end
 
 local function get_gitignore_templates()
-  local headers, stream = assert(http.new_from_uri("http://example.com"):go())
-  local body = assert(stream:get_body_as_string())
+  local handle = io.popen('curl -s ' .. url)
 
-  if headers:get ":status" ~= "200" then
-        error(body)
+  if handle == nil then
+    return {'Could not fetch gitignore templates'}
   end
 
-  print(body)
-  return body
+  local output = handle:read('*a')
+  handle:close()
+
+  print(output)
+  return vim.split(output, '\n')
 end
 
 local function update_window()
