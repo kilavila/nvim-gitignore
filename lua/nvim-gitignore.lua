@@ -1,7 +1,7 @@
 local api = vim.api
 local buf, win
 
-local url = 'https://api.github.com/gitignore/templates'
+local url = 'https://api.github.com/gitignore/templates/'
 local window_open = false
 
 local function open_window()
@@ -42,7 +42,7 @@ local function open_window()
     col = col
   }
 
-  local border_title = ' github/gitignore '
+  local border_title = ' .gitignore '
   local border_lines = { '╭' .. border_title .. string.rep('─', win_width - string.len(border_title)) .. '╮' }
   local middle_line = '│' .. string.rep(' ', win_width) .. '│'
   for _ = 1, win_height do
@@ -103,6 +103,11 @@ local function update_window()
   api.nvim_buf_set_option(buf, 'modifiable', false)
 end
 
+local function select_template()
+  local current_line = api.nvim_get_current_line()
+  local template_url = url .. current_line
+end
+
 local function move_cursor()
   local new_pos = math.max(4, api.nvim_win_get_cursor(win)[1] - 1)
   api.nvim_win_set_cursor(win, { new_pos, 0 })
@@ -111,11 +116,11 @@ end
 local function set_mappings()
   local mappings = {
     ['<esc>'] = 'close_window()',
-    ['<cr>']  = '',
+    ['<cr>']  = 'select_template()',
   }
 
   for k, v in pairs(mappings) do
-    api.nvim_buf_set_keymap(buf, 'n', k, ':lua require"nvim-yoink".' .. v .. '<cr>', {
+    api.nvim_buf_set_keymap(buf, 'n', k, ':lua require"nvim-gitignore".' .. v .. '<cr>', {
       nowait = true, noremap = true, silent = true
     })
   end
@@ -131,6 +136,7 @@ end
 return {
   gitignore = gitignore,
   update_window = update_window,
+  select_template = select_template,
   move_cursor = move_cursor,
   close_window = close_window,
 }
