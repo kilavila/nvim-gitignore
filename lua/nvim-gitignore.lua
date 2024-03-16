@@ -119,7 +119,17 @@ end
 local function select_template()
   local current_line = api.nvim_get_current_line()
   local template_url = url .. '/' .. current_line
-  local template = get_template(template_url)
+  local template_json = get_template(template_url)
+
+  if template_json == nil then
+    print('Failed to fetch template')
+    close_window()
+    return
+  end
+
+  local template_raw = string.match(template_json.tostring(), '"source": "(.*)"')
+  local template = string.gsub(template_raw, '\\n', '\n')
+
   print(template)
 end
 
