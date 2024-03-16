@@ -1,7 +1,7 @@
 local api = vim.api
 local buf, win
 
-local url = 'https://api.github.com/gitignore/templates/'
+local url = 'https://api.github.com/gitignore/templates'
 local window_open = false
 
 local function open_window()
@@ -103,9 +103,24 @@ local function update_window()
   api.nvim_buf_set_option(buf, 'modifiable', false)
 end
 
+local function get_template(template_url)
+  local result = io.popen('curl -s ' .. template_url)
+
+  if result == nil then
+    return
+  end
+
+  local data = result:read('*a')
+  result:close()
+
+  return data
+end
+
 local function select_template()
   local current_line = api.nvim_get_current_line()
-  local template_url = url .. current_line
+  local template_url = url .. '/' .. current_line
+  local template = get_template(template_url)
+  print(template)
 end
 
 local function move_cursor()
