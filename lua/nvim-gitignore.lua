@@ -93,7 +93,10 @@ local function update_window()
 
   local templates = {}
   for template in string.gmatch(list, '[^\r\n]+') do
-    table.insert(templates, template)
+    local template_name = string.match(template, '"(.*)"')
+    if template_name ~= nil then
+      table.insert(templates, template_name)
+    end
   end
 
   api.nvim_buf_set_lines(buf, 0, -1, false, templates)
@@ -109,25 +112,12 @@ local function set_mappings()
   local mappings = {
     ['<esc>'] = 'close_window()',
     ['<cr>']  = '',
-    q         = 'close_window()',
-    h         = '',
-    l         = '',
   }
 
   for k, v in pairs(mappings) do
     api.nvim_buf_set_keymap(buf, 'n', k, ':lua require"nvim-yoink".' .. v .. '<cr>', {
       nowait = true, noremap = true, silent = true
     })
-  end
-
-  local other_chars = {
-    'a', 'b', 'c', 'd', 'e', 'f', 'g', 'i', 'm', 'n', 'o', 'p', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'
-  }
-
-  for _, v in ipairs(other_chars) do
-    api.nvim_buf_set_keymap(buf, 'n', v, '', { nowait = true, noremap = true, silent = true })
-    api.nvim_buf_set_keymap(buf, 'n', v:upper(), '', { nowait = true, noremap = true, silent = true })
-    api.nvim_buf_set_keymap(buf, 'n', '<c-' .. v .. '>', '', { nowait = true, noremap = true, silent = true })
   end
 end
 
