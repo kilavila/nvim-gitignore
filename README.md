@@ -1,11 +1,14 @@
 # nvim-gitignore
 
-Fast way to generate gitignore files for your new projects!<br>
-This plugin uses curl to make HTTP requests to GitHub's api: `https://api.github.com/gitignore/templates`
+Fast way to generate gitignore and license files for your new projects!<br>
+This plugin uses curl to make HTTP requests to GitHub's api: `https://api.github.com/`
+
+## Updates
+- Added `Licenses` command
 
 ## Features
-- List gitignore templates from GitHub's list of templates
-- Select a template from a list which will create the file for you
+- Generate gitignore files from templates
+- Generate license files from templates
 
 ## Installation
 With [lazy.nvim](https://github.com/folke/lazy.nvim)
@@ -18,4 +21,5 @@ Press enter to select a template or escape to close the window.
 ## Commands
 ```
 :Gitignore
+:Licenses
 ```
