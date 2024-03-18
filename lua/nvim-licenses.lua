@@ -92,11 +92,8 @@ local function update_window()
   end
 
   local licenses = {}
-  for license in string.gmatch(list, '"url": "(.-)"') do
-    local license_name = string.match(license, 'licenses/(.-)')
-    print(license)
-    print(license_name)
-    if license_name ~= nil then
+  for license in string.gmatch(list, '"spdx_id": "(.-)"') do
+    if license ~= nil then
       table.insert(licenses, license)
     end
   end
@@ -105,8 +102,8 @@ local function update_window()
   api.nvim_buf_set_option(buf, 'modifiable', false)
 end
 
-local function get_license(license_url)
-  local result = io.popen('curl -s ' .. license_url)
+local function get_license(license)
+  local result = io.popen('curl -s https://api.github.com/licenses/' .. license)
 
   if result == nil then
     return
@@ -120,34 +117,29 @@ end
 
 local function select_license()
   local current_line = api.nvim_get_current_line()
-  local template_url = url .. '/' .. current_line
-  local template_json = get_license(template_url)
+  local license_json = get_license(current_line)
 
-  if template_json == nil then
+  if license_json == nil then
     print('Failed to fetch license')
     close_window()
     return
   end
 
-  -- get "source" property
-  -- replace "\n" with line break
-  -- turn to string and print
-  local source = template_json:match('"source": "(.-)"')
-  local template = string.gsub(source, '\\n', '\n')
+  local source = license_json:match('"body": "(.-)"')
+  local license = string.gsub(source, '\\n', '\n')
 
-  -- write template to new file ".gitignore"
-  local file = io.open('.gitignore', 'w')
+  local file = io.open('LICENSE.md', 'w')
 
   if file == nil then
-    print('Failed to write .gitignore')
+    print('Failed to write LICENSE.md')
     close_window()
     return
   end
 
   close_window()
-  file:write(template)
+  file:write(license)
   file:close()
-  print('License written to .gitignore')
+  print(current_line .. ' license written to LICENSE.md')
 end
 
 local function move_cursor()

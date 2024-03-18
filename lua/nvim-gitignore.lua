@@ -127,13 +127,9 @@ local function select_template()
     return
   end
 
-  -- get "source" property
-  -- replace "\n" with line break
-  -- turn to string and print
   local source = template_json:match('"source": "(.-)"')
   local template = string.gsub(source, '\\n', '\n')
 
-  -- write template to new file ".gitignore"
   local file = io.open('.gitignore', 'w')
 
   if file == nil then
