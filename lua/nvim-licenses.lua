@@ -125,10 +125,10 @@ local function select_license()
     return
   end
 
-  -- local source = license_json:match('"body": "(.-)"')
-  -- match "body": (.-) to end of line
-  local source = license_json:match('"body":(.-)",$')
+  local source = license_json:match('"body":(.-)$')
   local license = string.gsub(source, '\\n', '\n')
+  -- remove last 3 lines of license
+  license = string.sub(license, 0, string.len(license) - 3)
 
   local file = io.open('LICENSE.md', 'w')
 
